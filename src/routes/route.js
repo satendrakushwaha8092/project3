@@ -12,7 +12,8 @@ router.get("/test-me", function(req,res){
 
 
 
-router.post("/createuser",usercontroller.userCreate)
+router.post("/register",usercontroller.userCreate)
+router.post("/loginuser", usercontroller.userLogin)
 
 
 module.exports = router;
