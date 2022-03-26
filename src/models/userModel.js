@@ -11,7 +11,7 @@ const userSchema = new mongoose.Schema({
     },
     name: { type: String, required: true },
 
-    phone: {type : String, required: true, unique: true,match : [/^(\+91[\-\s]?)?[0]?(91)?[789]\d{9}$/, 'please provide valid mobile number']
+    phone: {type : String, required: true, unique: true, 
 },
 
     email:  { type : String, required:true,
@@ -21,10 +21,10 @@ const userSchema = new mongoose.Schema({
              isAsync: false
          }
          },
+         //password:{type:String,required:true},
+    password:{  type: String, required: true, match:[/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/, 'Min length shd be 8 and max length shd be 15']
 
-    password:{  type: String, required: true,  minlength:8, maxlength:15},
-
-
+        },
     address: {
         street : {type: String},
         city : {type: String},
@@ -39,4 +39,4 @@ const userSchema = new mongoose.Schema({
 
 
 
-module.exports = mongoose.model('User', userSchema)
+module.exports = mongoose.model('Createuser', userSchema)
