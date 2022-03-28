@@ -3,27 +3,59 @@ const mongoose = require('mongoose');
 
 const bookSchema = new mongoose.Schema({
 
-    title:  { type: String, required: true, unique:true },
+    title:  { 
+        type: String, 
+        required: true, 
+        unique:true 
+    },
 
-    excerpt: { type: String, required: true},
+    excerpt: { 
+        type: String, 
+        required: true
+    },
 
-    userId: { required: true , type: ObjectId,
-        ref: " userModel"},
+    userId: { 
+        required: true , 
+        ref: " userModel",
+        type:mongoose.Types.ObjectId,
+    },
 
-    ISBN: { type: String, required: true, unique:true },
+    ISBN: { 
+        type: String, 
+        required: true, 
+        unique:true },
 
-    category: { type: String, required: true, },
+    category: {
+         type: String, 
+         required: true, 
+        },
 
-    subcategory: { type: String, required: true},
+    subcategory: { 
+        type: String, 
+        required: true
+    },
     
-    reviews: {type: Number, default:0},
+    reviews: {
+        type: Number, 
+        default:0
+    },
     
-    deletedAt: {Date, default:Date.now}, 
     
-    isDeleted: {type: Boolean, default: false},
+    isDeleted: {
+        type: Boolean, 
+        default: false
+    },
+
+    // releasedAt:{
+    //     type: Date,
+    //     required:true,
+    //     default: null
+    // },
     
-    releasedAt: {},
+    
 
 
 
 }, {timestamps:true})
+
+module.exports=mongoose.model('createbook',bookSchema)
