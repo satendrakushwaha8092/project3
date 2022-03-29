@@ -7,15 +7,19 @@ const usercontroller = require("../controllers/usercontroller")
 const bookController=require("../controllers/bookcontroller")
 
 
-router.get("/test-me", function(req,res){
-    res.send("My api")
 
-})
 
 
 
 router.post("/register",usercontroller.userCreate)
-router.post("/loginuser", usercontroller.userLogin)
-router.post("/bookCreate",bookController.bookCreate)
+router.post("/login", usercontroller.userLogin)
+
+
+router.post("/books",bookController.bookCreate)
+router.get("/bookss",bookController.getBook)
+router.get("/books/:bookId",bookController.getBookbyId)
+router.put("/books/:bookId",bookController.bookUpdate)
+router.delete("/books/:bookId",bookController.deletebyid)
+
 
 module.exports = router;

@@ -38,7 +38,7 @@
   reviews: {number, default: 0, comment: Holds number of reviews of this book},
   deletedAt: {Date, when the document is deleted}, 
   isDeleted: {boolean, default: false},
-  releasedAt: {Date, mandatory, format("YYYY-MM-DD")},
+ atory, format("YYYY-MM releasedAt: {Date, mand-DD")},
   createdAt: {timestamp},
   updatedAt: {timestamp},
 }
@@ -198,7 +198,8 @@ Refer below sample
   "releasedAt": "2021-09-17T04:25:07.803Z"
   "createdAt": "2021-09-17T04:25:07.803Z",
   "updatedAt": "2021-09-17T04:25:07.803Z",
-}
+}yadi true dogi to date aye aisa hai
+
 ```
 
 ### reviews

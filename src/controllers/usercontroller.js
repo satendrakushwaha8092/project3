@@ -30,6 +30,12 @@ try {
     if (!name){
         return res.status(400).send({ status: false, msg: "Name is required" })
     }
+     
+    let trimname =name.trim()
+    if(!(/^(\w+\s)*\w+$/.test(trimname))){
+        return res.status(400).send({ status: false, msg: "Please give a valid name without space" })
+
+    }
 
     let password = req.body.password
     if (!password){
