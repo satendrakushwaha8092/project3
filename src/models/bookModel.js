@@ -34,7 +34,7 @@ const bookSchema = new mongoose.Schema({
     },
 
     subcategory: {
-         type: String, 
+         type: [String], 
          required: true
         },
     
@@ -43,16 +43,18 @@ const bookSchema = new mongoose.Schema({
         default:0
     },
     
-    deletedAt: {type: Date }, 
+    
     
     isDeleted: {
         type: Boolean, 
         default: false
     },
+
+    deletedAt: {type: Date }, 
     
     releasedAt: {
         type: Date, 
-        default:Date.now,
+        
          required:true
         }, 
     

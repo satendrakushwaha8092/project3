@@ -9,20 +9,26 @@ const userSchema = new mongoose.Schema({
         enum: ["Mr", "Mrs", "Miss"],
         required: true
     },
-    name: { type: String, required: true },
+    name: { 
+        type: String, 
+        required: true 
+    },
 
-    phone: {type : String, required: true, unique: true, 
+    phone: {
+        type : String,
+        required: true, 
+        unique: true, 
 },
 
-    email:  { type : String, required:true,
-        // validate:{
-        //     validator:validator.isEmail,
-        //       message:'{Value} is not a valid email',
-        //       isAsync: false
-        //   }
+    email:  { 
+        type : String, 
+        required:true,
          },
-         //password:{type:String,required:true},
-    password:{  type: String, required: true, match:[/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/, 'Min length shd be 8 and max length shd be 15']
+         
+    password:{ 
+         type: String, 
+         required: true,
+         match:[/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/, 'Min length shd be 8 and max length shd be 15']
 
         },
     address: {

@@ -6,17 +6,26 @@ const isValidTitle=function(title){
     return ['Mr','Mrs','Miss'].indexOf(title) !==-1
 }
 
+const isValidRequestBody = function(reqBody){
+    return Object.keys(reqBody).length >0
+}
+
 
 const userCreate = async function (req, res) {
 try {
     let data = req.body;
+    let queryParams=req.query;
     const { email } = req.body
     //const { phone } = req.body
+
     if (Object.keys(data).length == 0) {
-        res.status(400).send({ status: false, msg: "please provide some data" })
+         return res.status(400).send({ status: false, msg: "please provide some data" })
     }
     
-    
+     if(!isValidRequestBody(data)){
+        res.status(400).send({ status: false, message: "please provide some data"})
+        return
+     }
     
     let title = req.body.title
     if (!title){
@@ -39,7 +48,7 @@ try {
 
     let password = req.body.password
     if (!password){
-        return res.status(400).send({ status: false, msg: "Password id required" })
+        return res.status(400).send({ status: false, msg: "Password is required" })
     }  
 
     let isValidPass= /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,16}$/.test(password)
@@ -63,7 +72,7 @@ try {
         return res.status(401).send({ status: false, msg: "phone no. is already exist" })
     }
     if (!(/^(\+91[\-\s]?)?[0]?(91)?[789]\d{9}$/.test(phone))) {
-        return res.status(400).send({ status: false, msg: " enter valid no." })
+        return res.status(400).send({ status: false, msg: " enter valid  phone no." })
     }
 
     if(!email){
@@ -98,10 +107,19 @@ const userLogin = async function(req,res){
     try{
          let data =req.body;
          if(Object.keys(data).length==0){
-             res.status(400).send({status:false,msg:"kindly pass Some Data"})
+             return  res.status(400).send({status:false,msg:"kindly pass Some Data"})
          }
          let username = req.body.email;
          let password = req.body.password;
+
+         if(!username){
+            return res.status(400).send({ status: false, msg: " Email is required" })
+        }
+        
+         if (!password){
+        return res.status(400).send({ status: false, msg: "Password is required" })
+         }
+
          let user = await userModel.findOne({email: username, password: password});
          if(!user)
              return res.status(400).send({
@@ -113,11 +131,10 @@ const userLogin = async function(req,res){
               userId: user._id,
               email :username
               
-            },"Stack",{expiresIn:"1800s"},
-            "project-3"
+            },'project3',{expiresIn:"1800s"}
             );
-            res.setHeader("y-api-key",token);
-          res.status(201).send({status: true,msg:'sucess', data: token})
+            res.header('y-api-key',token);
+           return res.status(200).send({status: true,msg:'sucess', data: {token}})
          
     }
     catch (err) {
