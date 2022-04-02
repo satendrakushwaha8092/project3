@@ -22,14 +22,22 @@ const reviewCreate = async function (req, res) {
         }
         else {
             let bookId = req.body.bookId
+            let bookID = req.params.bookId
             if (!bookId)
                 return res.status(400).send({ status: false, msg: " please enter bookId" })
+
+            if (!isValidObjectId(bookID)) {
+                res.status(400).send({ status: false, message: ` ${bookID}Is not a valid book id` })
+                return
+            }
 
 
             if (!isValidObjectId(bookId)) {
                 res.status(400).send({ status: false, message: `${bookId} is not a valid book id` })
                 return
             }
+
+
 
             let book = await bookModel.findOne({ _id: bookId, isDeleted: false })
             if (!book) {
@@ -93,7 +101,7 @@ const reviewUpdate = async function (req, res) {
             return res.status(404).send({ status: false, msg: "review  not exists" })
         }
 
-       // const result = book.toObject()
+        // const result = book.toObject()
         data['reviewData'] = reviewExit
 
         let rating = req.body.rating
@@ -119,7 +127,7 @@ const reviewUpdate = async function (req, res) {
 const reviewDelete = async function (req, res) {
     try {
 
-        
+
         let bookId = req.params.bookId;
         let reviewId = req.params.reviewId;
 
@@ -136,7 +144,7 @@ const reviewDelete = async function (req, res) {
             return res.status(404).send({ status: false, msg: "Book  not found" })
         }
 
-        let review = await reviewModel.findOne({ _id: reviewId, bookId: bookId ,isDeleted: false })
+        let review = await reviewModel.findOne({ _id: reviewId, bookId: bookId, isDeleted: false })
         if (!review) {
             return res.status(404).send({ status: false, msg: "Review  not found" })
         }
@@ -144,10 +152,10 @@ const reviewDelete = async function (req, res) {
 
 
         let deletedreview = await reviewModel.findOneAndUpdate({ _id: reviewId },
-           {$set: { isDeleted: true, deletedAt: new Date() }});
+            { $set: { isDeleted: true, deletedAt: new Date() }}, {new:true});
 
-            book.reviews=book.reviews ===0? 0:book.reviews - 1
-            await book.save()
+        book.reviews = book.reviews === 0 ? 0 : book.reviews - 1
+        await book.save()
         return res.status(200).send({ status: true, msg: 'success', data: deletedreview });
     }
 
@@ -161,7 +169,4 @@ const reviewDelete = async function (req, res) {
 module.exports.reviewCreate = reviewCreate
 module.exports.reviewUpdate = reviewUpdate
 module.exports.reviewDelete = reviewDelete
-
-
-
 

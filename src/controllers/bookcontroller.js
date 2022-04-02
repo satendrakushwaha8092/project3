@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+//const ObjectId = require("mongoose").Types.ObjectId;
 const bookModel = require("../models/bookModel.js")
 const jwt = require("jsonwebtoken");
 const userModel = require('../models/userModel.js');
@@ -9,6 +10,13 @@ const isValid=function(value){
     if(typeof value ==='string' && value.trim().length === 0) return false
     return true
 } 
+
+// const isValidObjectId = (objectId) => {
+//     if (ObjectId.isValid(objectId)) {
+//       return true;
+//     } else return false;
+//   };
+  
 
 
 const isValidObjectId = function (objectId) {
@@ -160,7 +168,7 @@ const getBookbyId = async function (req, res) {
         let reviews=await reviewModel.find({ bookId: bookId,isDeleted:false })
         // let bookwithreview = JSON.parse(JSON.stringify(Book))
         // bookwithreview.reviewsData = [...reviews]
-        //let data=Book.toObject()
+        let data=Book.toObject()
         data['reviewsData']=reviews
         return res.status(200).send({ status: true,message:'Books list', data:data })
     }
@@ -173,18 +181,15 @@ const getBookbyId = async function (req, res) {
 const bookUpdate = async function (req, res) {
     try {
         let data = req.body
-        let bookId = req.params.bookId;
+        let bookId = req.params.bookId.trim();
         const userIdFromToken = req.userId
-
-         if (!isValidObjectId(bookId)) {
-            res.status(400).send( { status : false , message : `${bookId} is Not a Valid book id` } )
-            return
-         }
-
-        if (!isValidObjectId(userIdFromToken)) {
-            res.status(400).send( { status : false , message : `${userIdFromToken} is Not a Valid token id` } )
+        
+        
+        if(!isValidObjectId(bookId)){
+            res.status(400).send({status:false,message: `${bookId} is not a valid book id`})
             return
         }
+        
          const book = await bookModel.findOne( { _id: bookId, isDeleted: false } )
 
         if(!book) {
@@ -228,11 +233,6 @@ const deletebyid = async function (req, res) {
 
         if(!isValidObjectId(bookId)){
             res.status(400).send({status:false,message: `${bookId} is not a valid book id`})
-            return
-        }
-
-        if(!isValidObjectId(userIdFromToken)){
-            res.status(400).send({status:false,message: `${userIdFromToken} is not a valid token id`})
             return
         }
 
