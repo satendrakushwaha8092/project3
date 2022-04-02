@@ -1,11 +1,18 @@
 const mongoose = require("mongoose")
 const reviewModel = require("../models/reviewModel.js")
 const bookModel = require("../models/bookModel.js")
-
+const numberRegrex = /\d+/
 
 const isValidObjectId = function (objectId) {
     return mongoose.Types.ObjectId.isValid(objectId)
 }
+
+const isValid = function (value) {
+    if (typeof value === 'undefined' || value === null) return false
+    if (typeof value === 'string' && value.trim().length === 0) return false
+    return true
+}
+
 
 const reviewCreate = async function (req, res) {
     try {
@@ -15,39 +22,40 @@ const reviewCreate = async function (req, res) {
         }
         else {
             let bookId = req.body.bookId
-            let bookId1 = req.params.bookId
             if (!bookId)
                 return res.status(400).send({ status: false, msg: " please enter bookId" })
-                
-    
+
+
             if (!isValidObjectId(bookId)) {
-            res.status(400).send({ status: false, message: `${bookId} is not a valid book id` })
-            return
-             }
-
-             if (!isValidObjectId(bookId1)) {
-                res.status(400).send({ status: false, message: `${bookId1} is not a valid book id in params` })
+                res.status(400).send({ status: false, message: `${bookId} is not a valid book id` })
                 return
-                 }
-
-            let booksId = await bookModel.findOne({ _id: bookId })
-            if (!booksId) {
-                return res.status(401).send({ status: false, msg: "Book id not exists" })
             }
-            
+
+            let book = await bookModel.findOne({ _id: bookId, isDeleted: false })
+            if (!book) {
+                return res.status(401).send({ status: false, msg: "Book  not exists" })
+            }
             // let reviewedAt = req.body.reviewedAt
             // if (!reviewedAt)
             // return res.status(400).send({ status: false, msg: " reviewAt time is required" })
 
             let rating = req.body.rating
             if (!rating)
-                return res.status(400).send({ status: false, msg: " please give ratings" })
+                return res.status(400).send({ status: false, msg: " Please give ratings" })
 
-          if(!(data.rating>0 && data.rating<=5))
-           return res.status(400).send({ status: false, msg: "rating is not valid" })
-            
+            if (isValid(rating)) {
+                if (!(!isNaN(Number(rating)) && numberRegrex.test(rating))) {
+                    return res.status(400).send({ status: false, msg: "Rating should be valid" })
+                }
+            }
+
+            if (!(data.rating > 0 && data.rating <= 5))
+                return res.status(400).send({ status: false, msg: "Rating must be between 1 to 5" })
+
         }
         let savedReview = await reviewModel.create(data)
+        // book.review=book.toObject()
+        // await book.save()
         return res.status(201).send({ status: true, msg: savedReview });
     }
 
@@ -64,19 +72,42 @@ const reviewUpdate = async function (req, res) {
         if (Object.entries(data).length == 0) {
             return res.status(400).send({ status: false, msg: "please provide some data" })
         }
-        
-        if (!(await bookModel.findOne({_id:req.params.bookId,isDeleted: false }))) 
-            return res.status(400).send({ status: false, msg: "book is not present" })
 
-        if (!(await reviewModel.findOne({_id:req.params.reviewId,isDeleted: false }))) 
-            return res.status(400).send({ status: false, msg: "review is not present" })
+        let bookId = req.params.bookId;
+        if (!isValidObjectId(bookId)) {
+            return res.status(400).send({ status: false, msg: `${bookId} is not a valid book id` })
+        }
 
-        if(!(data.rating>0 && data.rating<=5))
-         return res.status(400).send({ status: false, msg: "rating is not valid" })
-           
+        let book = await bookModel.findOne({ _id: bookId, isDeleted: false })
+        if (!book) {
+            return res.status(404).send({ status: false, msg: "Book  not found" })
+        }
 
-        let savedData = await reviewModel.findOneAndUpdate({ _id: req.params.reviewId }, 
-        data,{ updatedAt:new Date(),new: true })
+        let reviewId = req.params.reviewId;
+        if (!isValidObjectId(reviewId)) {
+            return res.status(400).send({ status: false, msg: `${reviewId} is not a valid review id` })
+        }
+
+        let reviewExit = await reviewModel.findOne({ _id: reviewId, isDeleted: false })
+        if (!reviewExit) {
+            return res.status(404).send({ status: false, msg: "review  not exists" })
+        }
+
+       // const result = book.toObject()
+        data['reviewData'] = reviewExit
+
+        let rating = req.body.rating
+        if (isValid(rating)) {
+            if (!(!isNaN(Number(rating)) && numberRegrex.test(rating))) {
+                return res.status(400).send({ status: false, msg: "Rating should be valid" })
+            }
+        }
+        if (!(data.rating > 0 && data.rating <= 5))
+            return res.status(400).send({ status: false, msg: "Rating must be between 1 to 5" })
+
+
+        let savedData = await reviewModel.findOneAndUpdate({ _id: reviewId },
+            data, { updatedAt: new Date(), new: true })
         return res.status(200).send({ status: true, msg: savedData });
     }
     catch (error) {
@@ -87,17 +118,37 @@ const reviewUpdate = async function (req, res) {
 
 const reviewDelete = async function (req, res) {
     try {
+
         
-        if (!(await bookModel.findOne({_id:req.params.bookId, isDeleted: false }))) 
-           return res.status(400).send({ status: false, msg: "book is not present" })
+        let bookId = req.params.bookId;
+        let reviewId = req.params.reviewId;
 
-        if (!(await reviewModel.findOne({_id:req.params.reviewId,isDeleted: false }))) 
-           return res.status(400).send({ status: false, msg: "review is not present" })
+        if (!isValidObjectId(bookId)) {
+            return res.status(400).send({ status: false, msg: `${bookId} is not a valid book id` })
+        }
+
+        if (!isValidObjectId(reviewId)) {
+            return res.status(400).send({ status: false, msg: `${reviewId} is not a valid review id` })
+        }
+
+        let book = await bookModel.findOne({ _id: bookId, isDeleted: false })
+        if (!book) {
+            return res.status(404).send({ status: false, msg: "Book  not found" })
+        }
+
+        let review = await reviewModel.findOne({ _id: reviewId, bookId: bookId ,isDeleted: false })
+        if (!review) {
+            return res.status(404).send({ status: false, msg: "Review  not found" })
+        }
 
 
-        let deletedreview = await reviewModel.findOneAndUpdate({ _id: req.params.reviewId}, 
-           { isDeleted:true, deletedAt:new Date()}, { new: true });
-           return res.status(200).send({ status: true, msg:'success', data: deletedreview });
+
+        let deletedreview = await reviewModel.findOneAndUpdate({ _id: reviewId },
+           {$set: { isDeleted: true, deletedAt: new Date() }});
+
+            book.reviews=book.reviews ===0? 0:book.reviews - 1
+            await book.save()
+        return res.status(200).send({ status: true, msg: 'success', data: deletedreview });
     }
 
     catch (error) {
@@ -108,5 +159,9 @@ const reviewDelete = async function (req, res) {
 
 
 module.exports.reviewCreate = reviewCreate
-module.exports.reviewUpdate=reviewUpdate
+module.exports.reviewUpdate = reviewUpdate
 module.exports.reviewDelete = reviewDelete
+
+
+
+

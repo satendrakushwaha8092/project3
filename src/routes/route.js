@@ -23,7 +23,7 @@ router.post("/login", usercontroller.userLogin)
 
 router.post("/books", auth.authentication, bookController.bookCreate)
 
-router.get("/bookss", auth.authentication, bookController.getBook)
+router.get("/books", auth.authentication, bookController.getBook)
 
 router.get("/books/:bookId", auth.authentication, bookController.getBookbyId)
 
