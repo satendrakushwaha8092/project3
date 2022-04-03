@@ -6,7 +6,7 @@ const isValidTitle=function(title){
     return ['Mr','Mrs','Miss'].indexOf(title) !==-1
 }
 
-const userCreate = async function (req, res) {
+const userCreate = async function (req, res) {   //create user detail
 try {
     let data = req.body;
     const { email } = req.body
@@ -90,7 +90,7 @@ catch (error) {
 
 
 
-const userLogin = async function(req,res){
+const userLogin = async function(req,res){  //user login using email password
     try{
          let data =req.body;
          if(Object.keys(data).length==0){
